@@ -60,7 +60,7 @@ class StyledSeekBar @JvmOverloads constructor(
     set(value) {
         field = value
 
-        seekbar.max = max - field - 1
+        seekbar.max = max - field * animationSmoothness
 
         if(personalizedList == null) {
             texts.clear()
@@ -76,7 +76,7 @@ class StyledSeekBar @JvmOverloads constructor(
     set(value) {
         field = value
 
-        seekbar.max = field - min - 1
+        seekbar.max = field * animationSmoothness - min
 
         if(personalizedList == null) {
             texts.clear()
@@ -93,7 +93,7 @@ class StyledSeekBar @JvmOverloads constructor(
             field = value
             (seekbar.layoutParams as LayoutParams).setMargins(0, (textSize + field).toInt(), 0, 0)
 
-            invalidate()
+            requestLayout()
         }
 
     var distorcionRange: Int = 0
@@ -113,7 +113,7 @@ class StyledSeekBar @JvmOverloads constructor(
         seekbar.setPaddingRelative(padding, 0, padding, 0)
         (seekbar.layoutParams as LayoutParams).setMargins(0, (maxTextElevation + field).toInt(), 0, 0)
 
-        invalidate()
+        requestLayout()
     }
 
     var textColor: Int = -1
@@ -130,11 +130,13 @@ class StyledSeekBar @JvmOverloads constructor(
         textAlign = Paint.Align.CENTER
     }
 
+    private val animationSmoothness = 100
+
     init {
         LayoutInflater.from(context).inflate(R.layout.ssb_layout, this, true)
 
         maxTextElevation = 32F
-        min = 1
+        min = -2
         max = 10
         textSize = 32F
         textColor = Color.BLACK
@@ -161,7 +163,7 @@ class StyledSeekBar @JvmOverloads constructor(
 
             val step = (width.toFloat() - seekbar.paddingStart - seekbar.paddingEnd) / (list.size - 1)
 
-            val textIndex = seekbar.progress
+            val textIndex = seekbar.progress/animationSmoothness
 
             for(i in 0 until list.size) {
                 val distanceFromValue = (i - textIndex).absoluteValue
