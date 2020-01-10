@@ -1,4 +1,4 @@
-package com.joaaoferreira.styledseekbar.components
+package com.joaaoferreira.waveseekbar
 
 import android.animation.ValueAnimator
 import android.content.Context
@@ -15,7 +15,6 @@ import android.widget.SeekBar
 import androidx.core.view.marginBottom
 import androidx.core.view.marginLeft
 import androidx.core.view.marginRight
-import com.joaaoferreira.styledseekbar.R
 import kotlinx.android.synthetic.main.ssb_layout.view.*
 import kotlin.math.absoluteValue
 import kotlin.math.round

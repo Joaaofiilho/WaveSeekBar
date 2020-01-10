@@ -3,24 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
-    android:layout_gravity="center"
     tools:context=".MainActivity">
 
-    <com.joaaoferreira.styledseekbar.components.WaveSeekBar
-        android:id="@+id/ssb"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        app:wsb_maxTextElevation="24dp"
-        app:wsb_textGap="8dp"
-        app:wsb_min="-5"
-        app:wsb_max="5"
-        app:wsb_textSize="24sp"
-        app:wsb_waveRange="2"
-        app:wsb_waveMultiplier="1"
-        app:wsb_thumbTint="@color/colorPrimary"
-        app:wsb_progressTint="@color/colorPrimary"
-        app:wsb_textColor="@color/colorPrimary" />
 </LinearLayout>
