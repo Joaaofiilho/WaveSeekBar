@@ -1,7 +1,9 @@
 package com.joaaoferreira.styledseekbar
 
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.TypedValue
 import android.widget.SeekBar
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -11,19 +13,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        ssb.max = 11
+//        with(ssb) {
+//            min = -5
+//            max = 5
+//            textColor = Color.BLUE
+//            textSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 24F, resources.displayMetrics)
+//            maxTextElevation = 24F * resources.displayMetrics.density
+//            waveRange = 2
+//            waveMultiplier = 1F
+//        }
 
-        sliderControlDistorcion.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                ssb.distorcionRange = progress + 1
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-        })
-
-        switchPersonalizedList.setOnCheckedChangeListener { _, isChecked ->
-            ssb.personalizedList = if(isChecked) listOf("A", "B", "C", "D", "E") else null
-        }
+//        ssb.personalizedList = listOf("A", "B", "C", "D", "E")
     }
 }
