@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="WaveSeekBar">
+        <attr name="wsb_min" format="integer"/>
+        <attr name="wsb_max" format="integer"/>
+        <attr name="wsb_maxTextElevation" format="dimension"/>
+        <attr name="wsb_textGap" format="dimension"/>
+        <attr name="wsb_waveRange" format="integer"/>
+        <attr name="wsb_waveMultiplier" format="float"/>
+        <attr name="wsb_textSize" format="dimension"/>
+        <attr name="wsb_textColor" format="color"/>
+        <attr name="wsb_thumbTint" format="color"/>
+        <attr name="wsb_progressTint" format="color"/>
+    </declare-styleable>
+</resources>
