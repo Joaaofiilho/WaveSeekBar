@@ -1,10 +1,8 @@
 package com.joaaoferreira.styledseekbar
 
-import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.TypedValue
-import android.widget.SeekBar
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -12,6 +10,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        ssb.setOnProgressChanged { progress, fromUser ->
+            Log.v("PROGRESS", progress.toString())
+        }
 
 //        with(ssb) {
 //            min = -5

@@ -1,7 +1,5 @@
 package com.joaaoferreira.styledseekbar.components
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
@@ -9,13 +7,14 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.LayerDrawable
 import android.util.AttributeSet
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.SeekBar
+import androidx.core.view.marginBottom
+import androidx.core.view.marginLeft
+import androidx.core.view.marginRight
 import com.joaaoferreira.styledseekbar.R
 import kotlinx.android.synthetic.main.ssb_layout.view.*
 import kotlin.math.absoluteValue
@@ -30,63 +29,84 @@ class WaveSeekBar @JvmOverloads constructor(
 
     private var texts = mutableListOf<String>()
 
-    /** A personalized list to display the text.
+    /**
+     * A personalized list to display the text.
+     * If you listen to the progress, you'll recieve the index of the list instead of the actual number
      * An empty list will not change anything.*/
     var personalizedList: List<String>? = null
-    set(value) {
-        value?.let {
-            if(it.isNotEmpty()) {
-                field = it
-                plMin = 0
-                plMax = it.size
+        set(value) {
+            value?.let {
+                if(it.isNotEmpty()) {
+                    field = it
+                    plMin = 0
+                    plMax = it.size
 
-                invalidate()
+                    updateSeekbarMaxValue()
+                }
+            } ?: run {
+                field = value
+                updateSeekbarMaxValue()
             }
-        } ?: run {
-            field = value
-            min = min
-            max = max
-
-            invalidate()
         }
-    }
+
+    /* Behavior attributes */
 
     var min: Int = 0
-    set(value) {
-        field = value
+        set(value) {
+            field = value
 
-        seekbar.max = (max - field) * animationSmoothness
-
-        if(personalizedList == null) {
             texts.clear()
             for (i in field..max) {
                 texts.add(i.toString())
             }
 
-            invalidate()
+            updateSeekbarMaxValue()
         }
-    }
 
     var max: Int = 0
-    set(value) {
-        field = value
+        set(value) {
+            field = value
 
-        seekbar.max = (field - min) * animationSmoothness
-
-        if(personalizedList == null) {
             texts.clear()
             for (i in min..field) {
                 texts.add(i.toString())
             }
 
+            updateSeekbarMaxValue()
+        }
+
+    var waveRange: Int = 0
+        set(value) {
+            field = value
+
             invalidate()
         }
-    }
+
+    var waveMultiplier: Float = 0F
+        set(value) {
+            field = value
+            invalidate()
+        }
+
+    /**
+     * This attribute controls how many progress are between two main progress points.
+     * How high this number is, more smoothly the animations will run.
+     * <i>Lower value = Better Performance</i>
+     * <i>Higher value = Better Animations</i>
+     *
+     * <p><i>The default value is 60.</i></p>*/
+    var animationSmoothness: Int = 60
+        set(value) {
+            field = value
+            updateSeekbarMaxValue()
+        }
+
+    /* Design attributes */
 
     var maxTextElevation: Float = 0F
         set(value) {
             field = value
-            (seekbar.layoutParams as LayoutParams).setMargins(0, (textSize + field + textGap).toInt(), 0, 0)
+            (seekbar.layoutParams as LayoutParams).setMargins(seekbar.marginLeft, (textSize + field + textGap).toInt(), seekbar.marginRight , seekbar.marginBottom)
 
             requestLayout()
         }
@@ -94,46 +114,33 @@ class WaveSeekBar @JvmOverloads constructor(
     var textGap: Float = 0F
         set(value) {
             field = value
-            (seekbar.layoutParams as LayoutParams).setMargins(0, (textSize + maxTextElevation + field).toInt(), 0, 0)
+            (seekbar.layoutParams as LayoutParams).setMargins(seekbar.marginLeft, (textSize + maxTextElevation + field).toInt(), seekbar.marginRight, seekbar.marginBottom)
 
             requestLayout()
         }
 
-    var waveRange: Int = 0
-    set(value) {
-        field = value
-
-        invalidate()
-    }
-
-    var waveMultiplier: Float = 0F
-    set(value) {
-        field = value
-        invalidate()
-    }
-
     var textSize: Float = 0F
-    set(value) {
-        field = value
+        set(value) {
+            field = value
 
-        pencil.textSize = field
+            pencil.textSize = field
 
-        val padding = (field/2).toInt()
+            val padding = (field/2).toInt()
 
-        seekbar.setPaddingRelative(padding, 0, padding, 0)
+            seekbar.setPaddingRelative(padding, seekbar.paddingTop, padding, seekbar.paddingBottom)
 
-        (seekbar.layoutParams as LayoutParams).setMargins(0, (maxTextElevation + field + textGap).toInt(), 0, 0)
+            (seekbar.layoutParams as LayoutParams).setMargins(0, (maxTextElevation + field + textGap).toInt(), 0, 0)
 
-        requestLayout()
-    }
+            requestLayout()
+        }
 
     var textColor: Int = -1
-    set(value) {
-        field = value
-        pencil.color = field
+        set(value) {
+            field = value
+            pencil.color = field
 
-        invalidate()
-    }
+            invalidate()
+        }
 
     var thumbTint: Int = -1
         set(value) {
@@ -151,6 +158,32 @@ class WaveSeekBar @JvmOverloads constructor(
             invalidate()
         }
 
+    /* Listeners */
+    private var _onProgressChanged: ((progress: Int, fromUser: Boolean) -> Unit)? = null
+    private var _onStartTrackingTouch: ((progress: Int) -> Unit)? = null
+    private var _onStopTrackingTouch: ((progress: Int) -> Unit)? = null
+
+    /**
+     * @param progress gives the actual number displayer. If you have a personalized
+     * list, it gives the index of that list instead. */
+    fun setOnProgressChanged(event: (progress: Int, fromUser: Boolean) -> Unit) {
+        _onProgressChanged = event
+    }
+
+    /**
+     * @param progress gives the actual number displayer. If you have a personalized
+     * list, it gives the index of that list instead. */
+    fun setOnStartTrackingTouch(event: (progress: Int) -> Unit) {
+        _onStartTrackingTouch = event
+    }
+
+    /**
+     * @param progress gives the actual number displayer. If you have a personalized
+     * list, it gives the index of that list instead. */
+    fun setOnStopTrackingTouch(event: (progress: Int) -> Unit) {
+        _onStopTrackingTouch = event
+    }
+
     /* Private attributes */
 
     private val pencil = Paint().apply {
@@ -158,21 +191,42 @@ class WaveSeekBar @JvmOverloads constructor(
     }
 
     private var plMin: Int = 0
-        set(value) {
-            field = value
-            seekbar.max = (plMax - field - 1) * animationSmoothness
-        }
 
     private var plMax: Int = 0
-        set(value) {
-            field = value
-            seekbar.max = (field - plMin - 1) * animationSmoothness
+
+    private fun getRelativeProgress(): Int {
+        var cleanProgress = round(seekbar.progress.toFloat() / animationSmoothness).toInt()
+        if(personalizedList == null) {
+            cleanProgress += min
+        }
+        return cleanProgress
+    }
+
+    private fun updateSeekbarMaxValue() {
+        val _max: Int
+        val _min: Int
+
+        if(personalizedList == null) {
+            _max = max
+            _min = min
+        } else {
+            _max = plMax - 1
+            _min = plMin
         }
 
-    private val animationSmoothness: Int = 100
+        seekbar.max = (_max - _min) * animationSmoothness
+    }
 
-    private fun enableSeekbarTouch(enable: Boolean) {
-        seekbar.setOnTouchListener { _, _ -> !enable }
+    private fun animateProgressTo(endValue: Int) {
+        ValueAnimator.ofInt(seekbar.progress, endValue)
+            .apply {
+                addUpdateListener {
+                    seekbar.progress = it.animatedValue as Int
+                }
+
+                duration = 200L
+                start()
+            }
     }
 
     init {
@@ -199,35 +253,33 @@ class WaveSeekBar @JvmOverloads constructor(
 
         seekbar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                this@WaveSeekBar._onProgressChanged?.let {
+                    it(getRelativeProgress(), fromUser)
+                }
+
                 invalidate()
             }
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                seekbar?.let { sb ->
-                    if(sb.progress % animationSmoothness != 0) {
-                        enableSeekbarTouch(false)
-                        ValueAnimator.ofInt(seekbar.progress, round(seekbar.progress.toFloat() / animationSmoothness).toInt() * animationSmoothness)
-                            .apply {
-                                addUpdateListener {
-                                    seekbar.progress = it.animatedValue as Int
-                                }
-
-                                addListener(object: AnimatorListenerAdapter() {
-                                    override fun onAnimationEnd(animation: Animator?, isReverse: Boolean) {
-                                        super.onAnimationEnd(animation, isReverse)
-                                        enableSeekbarTouch(true)
-                                        Log.v("PROGRESS", seekbar.progress.toString())
-                                    }
-                                })
-
-                                duration = 100L
-                                start()
-                            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                seekBar?.let {
+                    this@WaveSeekBar._onStartTrackingTouch?.let {
+                        it(getRelativeProgress())
                     }
                 }
             }
 
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                seekbar?.let { sb ->
+
+                    if(sb.progress % animationSmoothness != 0) {
+                        val endValue = round(seekbar.progress.toFloat() / animationSmoothness).toInt() * animationSmoothness
+                        animateProgressTo(endValue)
+                    }
+
+                    this@WaveSeekBar._onStopTrackingTouch?.let {
+                        it(getRelativeProgress())
+                    }
+                }
+            }
         })
     }
 
@@ -240,19 +292,15 @@ class WaveSeekBar @JvmOverloads constructor(
 
             for(i in 0 until list.size) {
                 val distanceFromValue = ((i * animationSmoothness - seekbar.progress) / animationSmoothness.toFloat()).absoluteValue
-                var elevation = maxTextElevation * distanceFromValue / 2 * waveMultiplier
-
-                if(elevation > maxTextElevation) {
-                    elevation = maxTextElevation
-                }
-
-                pencil.alpha = (0xFF / (distanceFromValue + 1)).toInt()
-
-                if(i == 1) {
-                    Log.v("PROGRESS",((i * animationSmoothness - seekbar.progress) / animationSmoothness.toFloat()).toString())
-                }
-
                 if(distanceFromValue.absoluteValue <= waveRange + 0.5) {
+                    var elevation = maxTextElevation * distanceFromValue / 2 * waveMultiplier
+
+                    if(elevation > maxTextElevation) {
+                        elevation = maxTextElevation
+                    }
+
+                    pencil.alpha = (0xFF / (distanceFromValue + 1)).toInt()
+
                     it.drawText(list[i], seekbar.paddingStart + i*step, textSize + elevation, pencil)
                 }
             }
