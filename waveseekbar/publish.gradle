@@ -32,8 +32,8 @@ publishing {
 }
 
 bintray {
-    user = project.hasProperty('user') ?: System.getenv('BINTRAY_USER')
-    key = project.hasProperty('apiKey') ?: System.getenv('BINTRAY_API_KEY')
+    user = /* Bintray username */
+    key = /* Bintray api key*/
     publications = ['Production']
     configurations = ['archives']
     // Default: false. Whether to run this as dry-run, without deploying
@@ -52,3 +52,5 @@ bintray {
         }
     }
 }
+
+apply from: 'https://raw.githubusercontent.com/sky-uk/gradle-maven-plugin/master/gradle-mavenizer.gradle'
