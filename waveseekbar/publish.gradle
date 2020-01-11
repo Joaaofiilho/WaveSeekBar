@@ -4,27 +4,40 @@ apply plugin: 'com.jfrog.bintray'
 version '1.0.0' // your library version
 group 'com.joaaofiilho' // whatever group name you'd like
 
-publishing {
-    publications {
-        Production(MavenPublication) {
-            artifact("$buildDir/outputs/aar/waveseekbar-release.aar") // replace with your library name
-            groupId this.group
-            artifactId 'waveseekbar' // replace with your library artifact id
-            version this.version
+project.afterEvaluate {
+    publishing {
+        publications {
+            Production(MavenPublication) {
+                artifact("$buildDir/outputs/aar/waveseekbar-release.aar")
+                // replace with your library name
+                groupId this.group
+                artifactId 'waveseekbar' // replace with your library artifact id
+                version this.version
 
-            pom.withXml {
-                def dependenciesNode = asNode().appendNode('dependencies')
+                artifact androidSourcesJar
 
-                // Iterate over the implementation dependencies (we don't want the test ones),
-                // adding a <dependency> node for each
-                configurations.implementation.allDependencies.each {
-                    // Ensure dependencies such as fileTree are not included in the pom.
-                    if (it.name != 'unspecified') {
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', it.group)
-                        dependencyNode.appendNode('artifactId', it.name)
-                        dependencyNode.appendNode('version', it.version)
+                pom.withXml {
+                    def dependenciesNode = asNode().appendNode('dependencies')
+
+                    // Iterate over the implementation dependencies (we don't want the test ones),
+                    // adding a <dependency> node for each
+                    configurations.implementation.allDependencies.each {
+                        // Ensure dependencies such as fileTree are not included in the pom.
+                        if (it.name != 'unspecified') {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', it.group)
+                            dependencyNode.appendNode('artifactId', it.name)
+                            dependencyNode.appendNode('version', it.version)
+                        }
                     }
+                }
+
+                pom.withXml {
+                    def root = asNode()
+                    root.appendNode('description', 'This is a personalized seekbar for Android with API 21 or higher!')
+                    root.appendNode('name', 'waveseekbar')
+                    root.appendNode('url', 'https://github.com/Joaaofiilho/WaveSeekBar')
+//                    root.children().last() + pomConfig
                 }
             }
         }
@@ -32,16 +45,16 @@ publishing {
 }
 
 bintray {
-    user = /* Bintray username */
-    key = /* Bintray api key*/
+    user = /* bintray username */
+    key = /* bintray apikey */
     publications = ['Production']
     configurations = ['archives']
     // Default: false. Whether to run this as dry-run, without deploying
     dryRun = false
     // Default: false. Whether to override version artifacts already published
-    override = false
+    override = true
     // Default: false. Whether version should be auto published after an upload
-    publish = true
+    publish = false
     pkg {
         repo = 'WaveSeekBar' // the name of the repository you created on Bintray
         name = 'com.joaaofiilho.waveseekbar' // the name of the package you created inside it
