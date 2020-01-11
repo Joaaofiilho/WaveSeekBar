@@ -93,8 +93,8 @@ class WaveSeekBar @JvmOverloads constructor(
      * <i>Lower value = Better Performance</i>
      * <i>Higher value = Better Animations</i>
      *
-     * <p><i>The default value is 60.</i></p>*/
-    var animationSmoothness: Int = 60
+     * <p><i>The default value is 100.</i></p>*/
+    var animationSmoothness: Int = 100
         set(value) {
             field = value
             updateSeekbarMaxValue()
@@ -247,6 +247,8 @@ class WaveSeekBar @JvmOverloads constructor(
         }
 
         attributes.recycle()
+
+        animationSmoothness = 100
 
         background = ColorDrawable(0)
 
