@@ -1,2 +1,2 @@
 include ':app', ':waveseekbar'
-rootProject.name='StyledSeekbar'
+rootProject.name='WaveSeekBar'

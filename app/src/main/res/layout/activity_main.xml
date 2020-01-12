@@ -3,7 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     tools:context=".MainActivity">
 
+    <com.joaaofiilho.waveseekbar.WaveSeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:wsb_min="10"
+        app:wsb_max="20"
+        app:wsb_waveRange="3"
+        app:wsb_waveMultiplier="0.6"
+        app:wsb_textSize="32sp"
+        app:wsb_maxTextElevation="40dp"/>
 </LinearLayout>

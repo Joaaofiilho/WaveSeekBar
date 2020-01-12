@@ -1,4 +1,4 @@
-package com.joaaoferreira.styledseekbar
+package com.joaaofiilho.waveseekbar
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

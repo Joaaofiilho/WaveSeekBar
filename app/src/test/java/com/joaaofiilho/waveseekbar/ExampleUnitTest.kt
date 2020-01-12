@@ -1,4 +1,4 @@
-package com.joaaoferreira.styledseekbar
+package com.joaaofiilho.waveseekbar
 
 import org.junit.Test
 

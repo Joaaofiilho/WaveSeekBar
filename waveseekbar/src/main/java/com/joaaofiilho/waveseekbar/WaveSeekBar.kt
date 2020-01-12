@@ -1,4 +1,4 @@
-package com.joaaoferreira.waveseekbar
+package com.joaaofiilho.waveseekbar
 
 import android.animation.ValueAnimator
 import android.content.Context
