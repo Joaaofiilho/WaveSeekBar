@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
-    tools:context=".MainActivity">
+    tools:context="com.joaaofiilho.customseekbar.MainActivity">
 
     <com.joaaofiilho.waveseekbar.WaveSeekBar
         android:layout_width="match_parent"

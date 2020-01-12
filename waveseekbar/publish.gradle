@@ -45,8 +45,8 @@ project.afterEvaluate {
 }
 
 bintray {
-    user = /* bintray username */
-    key = /* bintray apikey */
+    user = 'joaaofiilho'
+    key = 'fb659bdaeb00240146334e15fc02f45705a16b7e'
     publications = ['Production']
     configurations = ['archives']
     // Default: false. Whether to run this as dry-run, without deploying
